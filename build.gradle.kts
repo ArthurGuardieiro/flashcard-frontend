@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
     alias(libs.plugins.kotlin.plugin.serialization)
+    alias(libs.plugins.kotlinKapt)
 }
 
 group = "com.example"
@@ -17,6 +18,7 @@ application {
 
 repositories {
     mavenCentral()
+    google() // Adicione esta linha para acessar bibliotecas AndroidX
 }
 
 dependencies {
@@ -28,6 +30,7 @@ dependencies {
     implementation(libs.ktor.server.netty)
     implementation(libs.logback.classic)
     implementation(libs.ktor.server.config.yaml)
+    implementation(libs.androidx.room.common.jvm)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
 
@@ -36,4 +39,13 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.45.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.45.0")
     implementation("org.xerial:sqlite-jdbc:3.42.0.0") // driver SQLite
+
+    // Room components
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    testImplementation(libs.androidx.room.testing)
+
+    // Gson para TypeConverters
+    implementation(libs.google.gson)
 }

@@ -4,6 +4,10 @@ kotlin-version = "2.1.20"
 ktor-version = "3.1.2"
 logback-version = "1.4.14"
 
+room = "2.6.1"
+gson = "2.10.1"
+room-common-jvm = "2.7.1"
+
 [libraries]
 ktor-server-cors = { module = "io.ktor:ktor-server-cors", version.ref = "ktor-version" }
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor-version" }
@@ -16,7 +20,15 @@ ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml", version.
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor-version" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin-version" }
 
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+androidx-room-common-jvm = { group = "androidx.room", name = "room-common-jvm", version.ref = "room-common-jvm" }
+
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor-version" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-version" }
+kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin-version" }
