@@ -181,7 +181,7 @@ fun Application.configureRouting() {
                         it[question] = request.question
                         it[answer] = request.answer
                         it[userId] = request.userId
-                        it[type] = request.type
+                        it[type] = FlashcardType.valueOf(request.type.name)
                         it[options] = request.options?.joinToString(";")
                         val lLocations = request.locations?.joinToString(";")
                         if (!lLocations.isNullOrBlank() && lLocations.length > 6) {
