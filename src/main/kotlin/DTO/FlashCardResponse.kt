@@ -9,7 +9,11 @@ data class FlashcardResponse(
     val type: String,
     val options: List<String>,
     val locations: List<String>,
-    val isCorrect: Boolean? = null
+    val quality: Int? = null,
+    val nextRepetition: String,
+    val repetitions: Int,
+    val easinessFactor: Float,
+    val interval: Int,
 )
 
 
