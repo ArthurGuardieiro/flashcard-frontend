@@ -7,13 +7,14 @@ import java.time.LocalDateTime
 
 @Serializable
 data class FlashcardDTO(
+    val id: Int,
     val question: String,
     val answer: String,
-    val userId: Int,
     val type: FlashcardType,
     val options: List<String>? = null,
-    val locations: List<String>? =null,
-    val quality: Int? = null,
+    val userId: Int,
+    val locations: List<String>? = null,
+
     @Contextual
     val nextRepetition: LocalDateTime = LocalDateTime.now(),
     val repetitions: Int = 0,

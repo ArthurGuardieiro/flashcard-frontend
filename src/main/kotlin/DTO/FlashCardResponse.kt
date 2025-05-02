@@ -8,8 +8,6 @@ data class FlashcardResponse(
     val answer: String,
     val type: String,
     val options: List<String>,
-    val locations: List<String>,
-    val quality: Int? = null,
     val nextRepetition: String,
     val repetitions: Int,
     val easinessFactor: Float,

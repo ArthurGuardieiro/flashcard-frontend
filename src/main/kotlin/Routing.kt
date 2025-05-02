@@ -11,11 +11,15 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import DTO.RegisterRequest
 import DTO.AuthResponse
+import com.example.DTO.FlashcardAnswerDTO
+import com.example.DTO.FlashcardAnswerResponse
 import com.example.DTO.FlashcardResponse
 import com.example.DTO.LoginResponse
+import com.example.models.FlashcardAnswer
 import models.Users
 import org.jetbrains.exposed.sql.*
 import com.example.models.FlashcardType
+import com.example.models.evaluation.AnswerQualityEvaluator
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -41,8 +45,6 @@ fun Application.configureRouting() {
                                 answer = it[Flashcards.answer],
                                 type = it[Flashcards.type].toString(),
                                 options = it[Flashcards.options]?.split(";") ?: emptyList(),
-                                locations = it[Flashcards.locations]?.split(";") ?: emptyList(),
-                                quality = it[Flashcards.quality],
                                 nextRepetition = LocalDateTime.parse(it[Flashcards.nextRepetition], dateTimeFormatter)
                                     .toString(),
                                 repetitions = it[Flashcards.repetitions],
@@ -58,6 +60,40 @@ fun Application.configureRouting() {
                     "Error retrieving flashcards: ${e.message}"
                 )
             }
+        }
+
+        post("/flashcards/answer") {
+            val request = call.receive<FlashcardAnswerDTO>()
+
+            val correctAnswer = transaction {
+                Flashcards.select { Flashcards.id eq request.flashcardId }
+                    .single()[Flashcards.answer]
+            }
+
+            val isUserAnswerCorrect = request.userAnswer.equals(correctAnswer, ignoreCase = true)
+            val calculatedQuality = AnswerQualityEvaluator.evaluateQuality(
+                responseTimeMs = request.responseTimeMs,
+                isCorrect = isUserAnswerCorrect
+            )
+
+            transaction {
+                FlashcardAnswer.insert {
+                    it[flashcardId] = request.flashcardId
+                    it[userId] = request.userId
+                    it[responseTimeMs] = request.responseTimeMs
+                    it[userAnswer] = request.userAnswer
+                    it[quality] = calculatedQuality
+                    it[isCorrect] = isUserAnswerCorrect
+                }
+            }
+
+            call.respond(HttpStatusCode.OK, FlashcardAnswerResponse(
+                flashcardId = request.flashcardId,
+                userId = request.userId,
+                responseTimeMs = request.responseTimeMs,
+                isCorrect = isUserAnswerCorrect,
+                quality = calculatedQuality
+            ))
         }
 
         post("/flashcards") {
@@ -78,11 +114,6 @@ fun Application.configureRouting() {
                         it[userId] = request.userId
                         it[type] = request.type
                         it[options] = request.options?.joinToString(";")
-                        val lLocations = request.locations?.joinToString(";")
-                        if (!lLocations.isNullOrBlank() && lLocations.length > 6) {
-                            it[locations] = lLocations
-                        }
-                        it[quality] = request.quality
                         it[nextRepetition] = request.nextRepetition.format(dateTimeFormatter)
                         it[repetitions] = request.repetitions
                         it[easinessFactor] = request.easinessFactor
@@ -183,11 +214,6 @@ fun Application.configureRouting() {
                         it[userId] = request.userId
                         it[type] = FlashcardType.valueOf(request.type.name)
                         it[options] = request.options?.joinToString(";")
-                        val lLocations = request.locations?.joinToString(";")
-                        if (!lLocations.isNullOrBlank() && lLocations.length > 6) {
-                            it[locations] = lLocations
-                        }
-                        it[quality] = request.quality
                         it[nextRepetition] = request.nextRepetition.format(dateTimeFormatter)
                         it[repetitions] = request.repetitions
                         it[easinessFactor] = request.easinessFactor
