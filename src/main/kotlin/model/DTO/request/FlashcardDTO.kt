@@ -13,7 +13,8 @@ data class FlashcardDTO(
     val type: FlashcardType,
     val options: List<String>? = null,
     val userId: Int,
-    //val locations: List<String>? = null,
+    val locationId: Int,
+    val nextLocationId: Int? = null,
 
     @Contextual
     val nextRepetition: LocalDateTime = LocalDateTime.now(),
@@ -25,10 +26,13 @@ data class FlashcardDTO(
         newRepetitions: Int,
         newEasinessFactor: Float,
         newNextRepetitionDate: LocalDateTime,
-        newInterval: Int
+        newInterval: Int,
+        newLocationId: Int
     ) = copy(repetitions = newRepetitions,
         easinessFactor = newEasinessFactor,
         nextRepetition = newNextRepetitionDate,
-        interval = newInterval
+        interval = newInterval,
+        nextLocationId = newLocationId
+
     )
 }

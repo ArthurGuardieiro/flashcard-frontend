@@ -14,16 +14,27 @@ import com.example.viewmodel.LocationService
 
 class LocationAwareScheduler(private val locationService: LocationService) {
 
-    fun getNextReviewLocation(flashcardId: Int, userId: Int): Int {
+    fun getNextReviewLocation(flashcardId: Int, userId: Int, lastQuality: Int? = null): Int {
         return transaction {
-            FlashcardAnswer
-                .slice(FlashcardAnswer.locationId)
-                .select { FlashcardAnswer.flashcardId eq flashcardId }
-                .orderBy(FlashcardAnswer.createdAt to SortOrder.ASC)
-                .limit(1)
-                .singleOrNull()
-                ?.get(FlashcardAnswer.locationId)
-                ?: locationService.getDefaultLocation(userId)
+            // Se a última resposta foi ruim (quality < 3), mantenha no mesmo local
+            if (lastQuality != null && lastQuality < 3) {
+                FlashcardAnswer
+                    .slice(FlashcardAnswer.locationId)
+                    .select { FlashcardAnswer.flashcardId eq flashcardId }
+                    .orderBy(FlashcardAnswer.createdAt to SortOrder.DESC)
+                    .limit(1)
+                    .single()[FlashcardAnswer.locationId]
+            } else {
+                // Lógica normal de priorização por local
+                val prioritizedLocation = FlashcardLocationPriority
+                    .select { FlashcardLocationPriority.flashcardId eq flashcardId }
+                    .orderBy(priority to SortOrder.ASC)
+                    .limit(1)
+                    .singleOrNull()
+                    ?.get(FlashcardLocationPriority.locationId)
+
+                prioritizedLocation ?: locationService.getDefaultLocation(userId)
+            }
         }
     }
 

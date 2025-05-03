@@ -8,19 +8,26 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.logging.Logger
 
-class SpacedRepetition {
-    fun calculateRepetition(card: FlashcardDTO, quality: Int): FlashcardDTO {
+class SpacedRepetition(private val locationAwareScheduler: LocationAwareScheduler) {
+    fun calculateRepetition(card: FlashcardDTO, quality: Int, userId: Int, locationId: Int): FlashcardDTO {
         validateQualityFactorInput(quality)
+
+        // Atualiza as prioridades de localização
+        locationAwareScheduler.updateLocationPriority(card.id, locationId)
 
         val easiness = calculateEasinessFactor(card.easinessFactor, quality)
         val repetitions = calculateRepetitions(quality, card.repetitions)
         val interval = calculateInterval(repetitions, card.interval, easiness)
 
+        // Obtém o próximo local de revisão baseado na prioridade
+        val nextLocationId = locationAwareScheduler.getNextReviewLocation(card.id, userId)
+
         val cardAfterRepetition = card.withUpdatedRepetitionProperties(
             newRepetitions = repetitions,
             newEasinessFactor = easiness,
             newNextRepetitionDate = calculateNextPracticeDate(interval),
-            newInterval = interval
+            newInterval = interval,
+            newLocationId = nextLocationId
         )
         log.info(cardAfterRepetition.toString())
         return cardAfterRepetition
