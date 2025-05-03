@@ -1,51 +1,23 @@
 package com.example.routes
 
-fun Route.authRoutes() {
-    post("/register") {
-        val request = call.receive<RegisterRequest>().apply {
-            require(username.isNotBlank()) { "Username cannot be blank" }
-            require(password.length >= 6) { "Password must be at least 6 characters" }
-        }
+import com.example.viewmodel.AuthService
+import com.example.viewmodel.FlashcardAnswerService
+import com.example.viewmodel.FlashcardService
+import io.ktor.server.application.Application
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
+import org.koin.ktor.ext.inject
 
-        val passwordHash = request.password.hashCode().toString()
+fun Application.configureRouting() {
+    val authService by inject<AuthService>()
+    val flashcardService by inject<FlashcardService>()
+    val flashcardAnswerService by inject<FlashcardAnswerService>()
 
-        val exists = transaction {
-            Users.select { Users.username eq request.username }.any()
-        }
-
-        if (exists) {
-            call.respond(HttpStatusCode.Conflict, AuthResponse("Usuário já existe"))
-            return@post
-        }
-
-        transaction {
-            Users.insert {
-                it[Users.username] = request.username
-                it[Users.passwordHash] = passwordHash
-            }
-        }
-
-        call.respond(HttpStatusCode.Created, AuthResponse("Usuário registrado com sucesso"))
-    }
-
-    post("/login") {
-        val request = call.receive<RegisterRequest>().apply {
-            require(username.isNotBlank()) { "Username cannot be blank" }
-            require(password.isNotBlank()) { "Password cannot be blank" }
-        }
-
-        val passwordHash = request.password.hashCode().toString()
-
-        val user = transaction {
-            Users.select {
-                Users.username eq request.username and (Users.passwordHash eq passwordHash)
-            }.singleOrNull()
-        }
-
-        if (user != null) {
-            call.respond(LoginResponse("Login bem-sucedido", user[Users.id]))
-        } else {
-            call.respond(HttpStatusCode.Unauthorized, AuthResponse("Credenciais inválidas"))
+    routing {
+        route("/api") {
+            authRoutes(authService)
+            flashcardRoutes(flashcardService)
+            flashcardAnswerRoutes(flashcardAnswerService)
         }
     }
 }

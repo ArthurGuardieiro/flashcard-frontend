@@ -13,7 +13,7 @@ data class FlashcardDTO(
     val type: FlashcardType,
     val options: List<String>? = null,
     val userId: Int,
-    val locations: List<String>? = null,
+    //val locations: List<String>? = null,
 
     @Contextual
     val nextRepetition: LocalDateTime = LocalDateTime.now(),

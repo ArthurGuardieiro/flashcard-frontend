@@ -1,3 +1,9 @@
 package com.example.model.DTO.response
 
-data class ErrorResponse()
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class ErrorResponse(
+    val error: String,
+    val details: String? = null
+)

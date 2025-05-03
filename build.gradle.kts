@@ -35,5 +35,12 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:0.45.0")
     implementation("org.jetbrains.exposed:exposed-dao:0.45.0")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.45.0")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.45.0")
     implementation("org.xerial:sqlite-jdbc:3.42.0.0") // driver SQLite
+    implementation("io.insert-koin:koin-ktor:3.5.0")
+    implementation("io.insert-koin:koin-core:3.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    implementation("org.slf4j:slf4j-simple:2.0.9")
+    implementation("io.insert-koin:koin-logger-slf4j:3.5.0")
 }
