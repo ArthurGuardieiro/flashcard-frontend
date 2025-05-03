@@ -1,4 +1,4 @@
-package models
+package com.example.models.entities
 
 import com.example.models.FlashcardType
 import org.jetbrains.exposed.dao.id.IntIdTable
@@ -8,7 +8,7 @@ object Flashcards : IntIdTable() {
     val answer = varchar("answer", 255)
     val type = enumerationByName("type", 50, FlashcardType::class)
     val options = text("options").nullable()
-    val userId = integer("user_id")
+    val userId = integer("user_id").references(Users.id)
     val nextRepetition = text("next_repetition")
     val repetitions = integer("repetitions")
     val easinessFactor = float("easiness_factor")

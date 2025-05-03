@@ -1,4 +1,4 @@
-package com.example.DTO
+package com.example.models.DTO.request
 
 import com.example.models.FlashcardType
 import kotlinx.serialization.Contextual

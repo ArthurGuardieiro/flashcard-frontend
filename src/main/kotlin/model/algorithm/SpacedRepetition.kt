@@ -1,6 +1,6 @@
 package com.example.models.algorithm
 
-import com.example.DTO.FlashcardDTO
+import com.example.models.DTO.request.FlashcardDTO
 import kotlin.math.roundToInt
 import java.time.Duration
 import java.time.Instant
