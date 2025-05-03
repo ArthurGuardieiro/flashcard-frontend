@@ -191,11 +191,7 @@ fun BasicFlashcardStudyCard(
                     .clickable { showingAnswer = !showingAnswer },
                 contentAlignment = Alignment.Center
             ) {
-                AnimatedVisibility(
-                    visible = !showingAnswer,
-                    enter = fadeIn(animationSpec = tween(300)),
-                    exit = fadeOut(animationSpec = tween(300))
-                ) {
+                if (!showingAnswer) {
                     Text(
                         text = flashcard.front ?: "",
                         style = MaterialTheme.typography.bodyLarge,
@@ -203,11 +199,7 @@ fun BasicFlashcardStudyCard(
                     )
                 }
                 
-                AnimatedVisibility(
-                    visible = showingAnswer,
-                    enter = fadeIn(animationSpec = tween(300)),
-                    exit = fadeOut(animationSpec = tween(300))
-                ) {
+                if (showingAnswer) {
                     Text(
                         text = flashcard.back ?: "",
                         style = MaterialTheme.typography.bodyLarge,

@@ -309,7 +309,6 @@ fun StatsSummaryCard(
 /**
  * Gráfico de barras para revisões semanais.
  */
-
 @Composable
 fun WeeklyReviewsChart(
     data: Map<LocalDate, Int>,
@@ -318,6 +317,8 @@ fun WeeklyReviewsChart(
     val maxValue = data.values.maxOrNull() ?: 0
     val today = LocalDate.now()
     val dayFormatter = DateTimeFormatter.ofPattern("E")
+    val primaryColor = MaterialTheme.colorScheme.primary
+    
     Column(modifier = modifier) {
         Canvas(
             modifier = Modifier
@@ -340,9 +341,8 @@ fun WeeklyReviewsChart(
                 val endY = size.height - normalizedHeight
                 
                 // Barra
-
                 drawLine(
-                    color = MaterialTheme.colorScheme.primary,
+                    color = primaryColor,
                     start = Offset(startX, startY),
                     end = Offset(startX, endY),
                     strokeWidth = barWidth * 0.8f
@@ -360,7 +360,7 @@ fun WeeklyReviewsChart(
                 Text(
                     text = dayFormatter.format(date),
                     style = MaterialTheme.typography.bodySmall,
-                    color = if (date == today) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    color = if (date == today) primaryColor else MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -383,6 +383,8 @@ fun DifficultyPieChart(
     val easyAngle = (easyCount / total) * 360f
     val mediumAngle = (mediumCount / total) * 360f
     val hardAngle = (hardCount / total) * 360f
+    
+    val whiteColor = Color.White
     
     Canvas(modifier = modifier) {
         val center = Offset(size.width / 2, size.height / 2)
@@ -430,7 +432,7 @@ fun DifficultyPieChart(
         
         // Círculo de contorno
         drawCircle(
-            color = Color.White,
+            color = whiteColor,
             radius = radius,
             center = center,
             style = Stroke(width = 2.dp.toPx())

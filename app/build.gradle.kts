@@ -50,6 +50,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("androidx.navigation:navigation-compose:2.7.6")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     
     // AppCompat
@@ -69,7 +70,7 @@ dependencies {
     
     // Animações
     implementation("androidx.compose.animation:animation:1.5.4")
-  implementation(libs.navigation.runtime.android)
+    implementation("androidx.navigation:navigation-runtime:2.7.6")
 
-  debugImplementation("androidx.compose.ui:ui-tooling:1.5.4")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.5.4")
 }
