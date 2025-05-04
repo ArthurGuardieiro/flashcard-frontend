@@ -81,6 +81,11 @@ class MainActivity : ComponentActivity() {
                                     fusedLocationClient.lastLocation
                                         .addOnSuccessListener { location ->
                                             if (location != null) {
+
+                                                val locationString = "${location.latitude},${location.longitude}"
+                                                Log.d("LOCALIZACAO_STRING", "Localização formatada: $locationString")
+
+
                                                 locaisFavoritos = locaisFavoritos + LocalFavorito(
                                                     nomeInput,
                                                     location.latitude,
