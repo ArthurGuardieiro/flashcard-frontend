@@ -14,6 +14,7 @@ data class FlashcardDTO(
     val options: List<String>? = null,
     val userId: Int,
     val locationId: Int,
+    val deckId: Int,
     val nextLocationId: Int? = null,
 
     @Contextual

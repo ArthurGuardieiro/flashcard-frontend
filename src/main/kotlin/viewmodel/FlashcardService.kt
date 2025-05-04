@@ -77,6 +77,7 @@ class FlashcardService {
         this[Flashcards.type] = dto.type
         this[Flashcards.options] = dto.options?.joinToString(";")
         this[Flashcards.userId] = dto.userId
+        this[Flashcards.deckId] = dto.deckId
         this[Flashcards.nextRepetition] = dto.nextRepetition.toString()
         this[Flashcards.repetitions] = dto.repetitions
         this[Flashcards.easinessFactor] = dto.easinessFactor
@@ -89,6 +90,7 @@ class FlashcardService {
         this[Flashcards.type] = dto.type
         this[Flashcards.options] = dto.options?.joinToString(";")
         this[Flashcards.userId] = dto.userId
+        this[Flashcards.deckId] = dto.deckId
         this[Flashcards.nextRepetition] = dto.nextRepetition.toString()
         this[Flashcards.repetitions] = dto.repetitions
         this[Flashcards.easinessFactor] = dto.easinessFactor
