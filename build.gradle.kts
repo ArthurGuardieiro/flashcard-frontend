@@ -2,10 +2,30 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
     alias(libs.plugins.kotlin.plugin.serialization)
+    id("com.android.library")
 }
 
 group = "com.example"
 version = "0.0.1"
+
+// Configuração para o Android
+android {
+    namespace = "com.example.ktor"
+    compileSdk = 34
+
+    defaultConfig {
+        minSdk = 24
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
 
 application {
     mainClass = "io.ktor.server.netty.EngineMain"
@@ -16,6 +36,7 @@ application {
 
 repositories {
     mavenCentral()
+    google()
 }
 
 dependencies {
