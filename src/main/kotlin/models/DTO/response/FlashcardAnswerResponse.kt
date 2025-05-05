@@ -4,7 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FlashcardAnswerResponse(
-    val quality: Int,
+    val id: Int? = null,
     val isCorrect: Boolean,
-    val correctAnswer: String? = null
-)
+    val quality: Int,
+    val correctAnswer: String? = null,
+    val createdAt: String? = null
+) 
