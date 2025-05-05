@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktor)
@@ -31,6 +30,12 @@ dependencies {
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
 
+    // Client HTTP
+    implementation("io.ktor:ktor-client-core:2.3.7")
+    implementation("io.ktor:ktor-client-cio:2.3.7")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.7")
+    implementation("io.ktor:ktor-client-logging:2.3.7")
+    
     // SQLite + Exposed ORM
     implementation("org.jetbrains.exposed:exposed-core:0.45.0")
     implementation("org.jetbrains.exposed:exposed-dao:0.45.0")

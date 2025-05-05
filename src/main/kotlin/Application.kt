@@ -1,19 +1,11 @@
 package com.example
 
 import com.example.di.appModule
-import com.example.models.entities.FlashcardAnswer
-import com.example.models.entities.FlashcardLocationPriority
 import io.ktor.serialization.kotlinx.json.*
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.Database
-import com.example.models.entities.Flashcards
-import com.example.models.entities.Locations
 import io.ktor.server.application.*
 import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import org.slf4j.event.Level
-import com.example.models.entities.Users
 import com.example.routes.configureRouting
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
@@ -29,7 +21,8 @@ fun Application.module() {
     configureSerialization()
     configureMonitoring()
     configureRouting()
-    configureDatabase()
+    // Banco de dados desativado, pois agora usamos o backend
+    // configureDatabase()
     install(ContentNegotiation) {
         json()
     }
@@ -38,6 +31,8 @@ fun Application.module() {
     }
 }
 
+// Função comentada pois agora usamos o banco de dados do backend
+/*
 fun Application.configureDatabase() {
     Database.connect("jdbc:sqlite:data.db", driver = "org.sqlite.JDBC")
 
@@ -49,3 +44,4 @@ fun Application.configureDatabase() {
         SchemaUtils.create(Locations)
     }
 }
+*/

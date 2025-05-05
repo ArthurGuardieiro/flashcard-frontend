@@ -1,24 +1,41 @@
 package com.example.viewmodel
 
-import com.example.models.entities.Users
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
+import com.example.models.DTO.request.LocationDTO
+import com.example.models.DTO.response.LocationResponse
+import com.example.network.ApiClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import kotlinx.coroutines.runBlocking
 
 class LocationService {
-    fun getDefaultLocation(userId: Int): Int {
-        return transaction {
-            val user = Users.select { Users.id eq userId }.singleOrNull()
-                ?: throw IllegalArgumentException("Usuário não encontrado")
-
-            user[Users.defaultLocationId].takeIf { it > 0 }
-                ?: throw IllegalStateException("Local padrão não configurado")
+    fun getLocations(): List<LocationResponse> {
+        return runBlocking {
+            try {
+                val response = ApiClient.client.get("${ApiClient.getBaseUrl()}/locations")
+                response.body<List<LocationResponse>>()
+            } catch (e: Exception) {
+                emptyList()
+            }
         }
     }
-    fun setDefaultLocation(userId: Int, locationId: Int) {
-        transaction {
-            Users.update({ Users.id eq userId }) {
-                it[defaultLocationId] = locationId
+
+    fun createLocation(request: LocationDTO): HttpStatusCode {
+        require(request.name.isNotBlank()) { "Location name cannot be blank" }
+
+        return runBlocking {
+            try {
+                val response = ApiClient.client.post("${ApiClient.getBaseUrl()}/locations") {
+                    contentType(ContentType.Application.Json)
+                    setBody(request)
+                }
+                response.status
+            } catch (e: Exception) {
+                HttpStatusCode.InternalServerError
             }
         }
     }
