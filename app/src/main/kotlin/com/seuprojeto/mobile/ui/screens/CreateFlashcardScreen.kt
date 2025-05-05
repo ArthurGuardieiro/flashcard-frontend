@@ -52,6 +52,7 @@ fun CreateFlashcardScreen(
     onNavigateBack: () -> Unit,
     existingFlashcard: Flashcard? = null,
     isLoading: Boolean = false,
+    deckId: String? = null,
     modifier: Modifier = Modifier
 ) {
     // Estados para o formulário
@@ -107,10 +108,12 @@ fun CreateFlashcardScreen(
                     // Criar flashcard
                     val flashcard = existingFlashcard?.copy(
                         title = title,
-                        type = selectedType
+                        type = selectedType,
+                        deckId = existingFlashcard.deckId ?: deckId
                     ) ?: Flashcard(
                         title = title,
-                        type = selectedType
+                        type = selectedType,
+                        deckId = deckId
                     )
                     
                     // Preencher campos específicos de acordo com o tipo

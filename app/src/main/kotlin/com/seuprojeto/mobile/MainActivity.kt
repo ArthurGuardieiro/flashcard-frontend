@@ -44,11 +44,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.seuprojeto.mobile.model.Deck
 import com.seuprojeto.mobile.model.Flashcard
 import com.seuprojeto.mobile.model.FlashcardType
 import com.seuprojeto.mobile.model.Location
 import com.seuprojeto.mobile.model.User
+import com.seuprojeto.mobile.ui.screens.CreateDeckScreen
 import com.seuprojeto.mobile.ui.screens.CreateFlashcardScreen
+import com.seuprojeto.mobile.ui.screens.DeckScreen
 import com.seuprojeto.mobile.ui.screens.HomeScreen
 import com.seuprojeto.mobile.ui.screens.LocationScreen
 import com.seuprojeto.mobile.ui.screens.LoginScreen
@@ -146,6 +149,7 @@ fun FlashcardsApp(
     val scope = rememberCoroutineScope()
 
     // Dados temporários para demonstração
+    val decks = remember { generateSampleDecks() }
     val flashcards = remember { generateSampleFlashcards() }
     val locations = remember { generateSampleLocations() }
     val stats = remember { generateSampleStats() }
@@ -176,8 +180,8 @@ fun FlashcardsApp(
                         LoginScreen(
                             onLogin = { username, password ->
                                 // Implementar lógica de autenticação aqui
-                                // Por enquanto, apenas navega para a tela inicial
-                                navController.navigate("home") {
+                                // Por enquanto, apenas navega para a tela de baralhos
+                                navController.navigate("decks") {
                                     popUpTo("login") { inclusive = true }
                                 }
                             },
@@ -191,8 +195,8 @@ fun FlashcardsApp(
                         RegisterScreen(
                             onRegister = { user ->
                                 // Implementar lógica de cadastro aqui
-                                // Por enquanto, apenas navega para a tela inicial
-                                navController.navigate("home") {
+                                // Por enquanto, apenas navega para a tela de baralhos
+                                navController.navigate("decks") {
                                     popUpTo("login") { inclusive = true }
                                 }
                             },
@@ -200,31 +204,89 @@ fun FlashcardsApp(
                             isLoading = isLoading
                         )
                     }
-                    // Tela inicial
-                    composable("home") {
-                        HomeScreen(
-                            flashcards = flashcards,
+                    // Tela de baralhos
+                    composable("decks") {
+                        DeckScreen(
+                            decks = decks,
                             isLoading = isLoading,
                             drawerState = drawerState,
-                            onAddFlashcard = { navController.navigate("create_flashcard") },
+                            onAddDeck = { navController.navigate("create_deck") },
+                            onDeckClick = { deck ->
+                                // Navegar para a tela de flashcards do baralho selecionado
+                                navController.navigate("home/${deck.id}")
+                            }
+                        )
+                    }
+                    
+                    // Tela de criação/edição de baralho
+                    composable("create_deck") {
+                        CreateDeckScreen(
+                            onSaveDeck = { deck ->
+                                // Implementar salvar baralho
+                                navController.popBackStack()
+                            },
+                            onNavigateBack = { navController.popBackStack() },
+                            isLoading = isLoading
+                        )
+                    }
+                    
+                    // Tela de edição de baralho
+                    composable("edit_deck/{deckId}") { backStackEntry ->
+                        val deckId = backStackEntry.arguments?.getString("deckId")
+                        val deck = decks.find { it.id == deckId }
+                        
+                        if (deck != null) {
+                            CreateDeckScreen(
+                                onSaveDeck = { updatedDeck ->
+                                    // Implementar atualizar baralho
+                                    navController.popBackStack()
+                                },
+                                onNavigateBack = { navController.popBackStack() },
+                                existingDeck = deck,
+                                isLoading = isLoading
+                            )
+                        } else {
+                            LaunchedEffect(Unit) {
+                                navController.popBackStack()
+                            }
+                        }
+                    }
+                    
+                    // Tela inicial (mostra flashcards de um baralho específico)
+                    composable("home/{deckId}") { backStackEntry ->
+                        val deckId = backStackEntry.arguments?.getString("deckId")
+                        val deck = decks.find { it.id == deckId }
+                        val deckFlashcards = flashcards.filter { it.deckId == deckId }
+                        
+                        HomeScreen(
+                            flashcards = deckFlashcards,
+                            isLoading = isLoading,
+                            drawerState = drawerState,
+                            onAddFlashcard = { 
+                                navController.navigate("create_flashcard?deckId=$deckId") 
+                            },
                             onFlashcardClick = { flashcard ->
                                 navController.navigate("edit_flashcard/${flashcard.id}")
                             },
-                            onStudyClick = { navController.navigate("study") },
+                            onStudyClick = { navController.navigate("study/$deckId") },
                             onLocationClick = { navController.navigate("location") },
-                            onStatsClick = { navController.navigate("stats") }
+                            onStatsClick = { navController.navigate("stats") },
+                            deckName = deck?.name ?: "Flashcards"
                         )
                     }
 
                     // Tela de criação de flashcard
-                    composable("create_flashcard") {
+                    composable("create_flashcard?deckId={deckId}") { backStackEntry ->
+                        val deckId = backStackEntry.arguments?.getString("deckId")
+                        
                         CreateFlashcardScreen(
                             onSaveFlashcard = { flashcard ->
                                 // Implementar salvar flashcard
                                 navController.popBackStack()
                             },
                             onNavigateBack = { navController.popBackStack() },
-                            isLoading = isLoading
+                            isLoading = isLoading,
+                            deckId = deckId
                         )
                     }
 
@@ -251,9 +313,12 @@ fun FlashcardsApp(
                     }
 
                     // Tela de estudo
-                    composable("study") {
+                    composable("study/{deckId}") { backStackEntry ->
+                        val deckId = backStackEntry.arguments?.getString("deckId")
+                        val deckFlashcards = flashcards.filter { it.deckId == deckId }
+                        
                         StudyScreen(
-                            flashcards = flashcards,
+                            flashcards = deckFlashcards,
                             isLoading = isLoading,
                             onNavigateBack = { navController.popBackStack() },
                             onFinishStudy = { reviewedFlashcards ->
@@ -325,8 +390,8 @@ fun AppDrawerContent(
             label = { Text("Início") },
             selected = false,
             onClick = {
-                navController.navigate("home") {
-                    popUpTo("home") { inclusive = true }
+                navController.navigate("decks") {
+                    popUpTo("decks") { inclusive = true }
                 }
                 scope.launch { drawerState.close() }
             }
@@ -365,9 +430,82 @@ fun AppDrawerContent(
 }
 
 /**
+ * Gera baralhos de exemplo para demonstração.
+ */
+private fun generateSampleDecks(): List<Deck> {
+    return listOf(
+        Deck(
+            id = "1",
+            name = "Inglês",
+            description = "Vocabulário e gramática inglesa",
+            cardCount = 25,
+            coverColor = 0xFF2196F3
+        ),
+        Deck(
+            id = "2",
+            name = "Matemática",
+            description = "Fórmulas e conceitos matemáticos",
+            cardCount = 15,
+            coverColor = 0xFF4CAF50
+        ),
+        Deck(
+            id = "3",
+            name = "História",
+            description = "Eventos históricos importantes",
+            cardCount = 20,
+            coverColor = 0xFFFF9800
+        ),
+        Deck(
+            id = "4",
+            name = "Programação",
+            description = "Conceitos de programação",
+            cardCount = 30,
+            coverColor = 0xFFE91E63
+        )
+    )
+}
+
+/**
  * Gera flashcards de exemplo para demonstração.
  */
 private fun generateSampleFlashcards(): List<Flashcard> {
+    val flashcard1 = Flashcard(
+        id = "1",
+        title = "Verbo 'to be'",
+        type = FlashcardType.BASIC,
+        deckId = "1"
+    )
+    flashcard1.front = "Como se conjuga o verbo 'to be' no presente?"
+    flashcard1.back = "I am, You are, He/She/It is, We are, You are, They are"
+
+    val flashcard2 = Flashcard(
+        id = "2",
+        title = "Teorema de Pitágoras",
+        type = FlashcardType.CLOZE,
+        deckId = "2"
+    )
+    flashcard2.fullText = "Em um triângulo retângulo, o quadrado da hipotenusa é igual à soma dos quadrados dos catetos: a² = b² + c²"
+    flashcard2.hiddenWords = listOf("hipotenusa", "soma", "catetos")
+
+    val flashcard3 = Flashcard(
+        id = "3",
+        title = "Capitais",
+        type = FlashcardType.TYPING,
+        deckId = "3"
+    )
+    flashcard3.question = "Qual é a capital da França?"
+    flashcard3.correctAnswer = "Paris"
+
+    val flashcard4 = Flashcard(
+        id = "4",
+        title = "Estruturas de Dados",
+        type = FlashcardType.MULTIPLE_CHOICE,
+        deckId = "4"
+    )
+    flashcard4.multipleChoiceQuestion = "Qual estrutura de dados opera no princípio LIFO (Last In, First Out)?"
+    flashcard4.options = listOf("Fila", "Pilha", "Lista encadeada", "Árvore binária")
+    flashcard4.correctOptionIndex = 1
+
     return listOf(
         Flashcard(
             id = UUID.randomUUID().toString(),
@@ -414,7 +552,11 @@ private fun generateSampleFlashcards(): List<Flashcard> {
             multipleChoiceQuestion = "Em que ano o Brasil foi descoberto pelos portugueses?"
             options = listOf("1492", "1500", "1503", "1550")
             correctOptionIndex = 1
-        }
+        },
+        flashcard1,
+        flashcard2,
+        flashcard3,
+        flashcard4
     )
 }
 

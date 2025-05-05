@@ -52,6 +52,7 @@ fun HomeScreen(
     onStudyClick: () -> Unit,
     onLocationClick: () -> Unit,
     onStatsClick: () -> Unit,
+    deckName: String = "Meus Flashcards",
     modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -60,7 +61,7 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             FlashcardTopAppBar(
-                title = "Meus Flashcards",
+                title = deckName,
                 menuIcon = Icons.Default.Menu,
                 onMenuClick = {
                     coroutineScope.launch {

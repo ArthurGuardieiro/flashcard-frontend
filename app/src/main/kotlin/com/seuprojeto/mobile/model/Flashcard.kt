@@ -12,6 +12,7 @@ import java.util.UUID
  * @property lastReviewed Data da última revisão
  * @property reviewCount Número de revisões
  * @property locationId Identificador da localização onde o flashcard foi revisado por último
+ * @property deckId Identificador do baralho ao qual o flashcard pertence
  * @property type Tipo do flashcard
  */
 data class Flashcard(
@@ -21,6 +22,7 @@ data class Flashcard(
     var lastReviewed: LocalDateTime? = null,
     var reviewCount: Int = 0,
     var locationId: String? = null,
+    var deckId: String? = null,
     val type: FlashcardType
 ) {
     // Campos específicos para cada tipo de flashcard
